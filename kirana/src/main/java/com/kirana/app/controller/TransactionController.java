@@ -20,6 +20,8 @@ import com.kirana.app.entity.Transaction;
 import com.kirana.app.service.CurrencyConversionService;
 import com.kirana.app.service.TransactionService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
@@ -42,7 +44,7 @@ public class TransactionController {
     }
 	
 	@PostMapping
-	public ResponseEntity<?> recordTransaction(@RequestBody Transaction transaction ,@RequestParam String targetCurrency) {
+	public ResponseEntity<?> recordTransaction(@Valid @RequestBody Transaction transaction ,@RequestParam String targetCurrency) {
 	    if (!apiRateLimiter.tryAcquire()) {
 	        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Rate limit exceeded");
 	    }

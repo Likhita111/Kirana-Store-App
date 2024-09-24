@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kirana.app.entity.Transaction;
+import com.kirana.app.exception.CurrencyConversionException;
+import com.kirana.app.exception.TransactionException;
 import com.kirana.app.repository.TransactionRepository;
 
 @Service
@@ -21,6 +23,7 @@ public class TransactionService {
 	 
 	 public Transaction saveTransactionWithConversion(Transaction transaction, String targetCurrency) {
 	        // Fetch the exchange rates from CurrencyConversionService
+		 try {
 	        Map<String, Object> exchangeRates = currencyConversionService.getExchangeRates();
 
 	        // Perform currency conversion if necessary
@@ -33,10 +36,14 @@ public class TransactionService {
 	        transaction.setDate(new Date());
 	        // Save the transaction after conversion
 	        return transactionRepository.save(transaction);
-	    }
+	    }catch (Exception e) {
+            throw new TransactionException("Failed to process the transaction", e);
+        }
+    }
 	 
 	 private double getConversionRate(String fromCurrency, String toCurrency, Map<String, Object> exchangeRates) {
 		    // Get the exchange rates from the response object
+		 try {
 		    Map<String, Object> rates = (Map<String, Object>) exchangeRates.get("rates");
 
 		    // Get the exchange rates for both 'fromCurrency' and 'toCurrency'
@@ -44,7 +51,10 @@ public class TransactionService {
 		    double toRate = getRateAsDouble(rates.get(toCurrency.toUpperCase()));
 
 		    return toRate / fromRate;  // Convert from 'fromCurrency' to 'toCurrency'
-		}
+		}catch (Exception e) {
+            throw new CurrencyConversionException("Failed to convert currency from " + fromCurrency + " to " + toCurrency, e);
+        }
+    }
 
 		private double getRateAsDouble(Object rate) {
 		    if (rate instanceof Integer) {
@@ -52,7 +62,7 @@ public class TransactionService {
 		    } else if (rate instanceof Double) {
 		        return (Double) rate;  // Directly return Double
 		    } else {
-		        throw new IllegalArgumentException("Unexpected rate type: " + rate.getClass());
+	            throw new CurrencyConversionException("Unexpected rate type: " + rate.getClass().getSimpleName());
 		    }
 		}
 
