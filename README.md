@@ -4,4 +4,4 @@ Here is a sample `README.md` file for your Spring Boot project that includes aut
 
  Kirana Store Service:
  
-   This project is a backend service for managing Kirana (grocery) store transactions. It records daily credit and debit transactions and automatically converts currencies using a currency conversion API. The service supports various features like transaction validation, currency conversion, and API rate limiting.
+   This project is a Full Stack service for managing Kirana (grocery) store transactions. It records daily credit and debit transactions and automatically converts currencies using a currency conversion API. The service supports various features like transaction validation, currency conversion, and API rate limiting.
